@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация — Читальня{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-12">
+    <div class="card p-8">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-[#111827] tracking-tight">Регистрация</h1>
+            <p class="text-[#6b7280] text-sm mt-2">Создайте аккаунт, чтобы публиковать уроки</p>
+        </div>
+        
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+                    {{ form.non_field_errors.as_text }}
+                </div>
+            {% endif %}
+            
+            <div>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Ваше имя *</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.name.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Электронная почта (Email) *</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.email.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Телефон</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.phone.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Пароль *</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.password.errors.as_text }}</p>
+                {% endif %}
+                <p class="text-[10px] text-slate-400 mt-1">Минимум 8 символов. Не должен состоять только из цифр.</p>
+            </div>
+            
+            <div>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Подтвердите пароль *</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.password_confirm.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="pt-2">
+                <button type="submit" class="w-full btn py-3">
+                    Зарегистрироваться
+                </button>
+            </div>
+        </form>
+        
+        <p class="text-center text-sm text-slate-500 mt-6 pt-6 border-t border-slate-100">
+            Уже есть аккаунт? <a href="{% url 'lessons:teacher_login' %}" class="font-semibold hover:underline" style="color:var(--color-primary)">Войти</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

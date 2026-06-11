@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Читальня{% endblock %}</title>
+    <!-- Tailwind CSS 3.4 Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google font from reference -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#fbf7f2',
+                        card: '#fffaf6',
+                        primary: '#ef6c30',
+                        'primary-hover': '#d35400',
+                        textMain: '#1a1612',
+                        textSecondary: '#6b5a48',
+                        border: '#efe6dd',
+                        success: '#10b981',
+                        error: '#ef4444',
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Custom styling compiled by Tailwind -->
+    <style type="text/tailwindcss">
+        :root {
+            --color-page-bg: #fbf7f2;
+            --color-card: #fffaf6;
+            --color-primary: #ef6c30;
+            --color-primary-hover: #d35400;
+            --color-text-main: #1a1612;
+            --color-text-secondary: #6b5a48;
+            --color-border: #efe6dd;
+            --color-secondary-bg: #efe6dd;
+            --color-success: #10b981;
+            --color-error: #ef4444;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-page-bg);
+            color: var(--color-text-main);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.25;
+            color: var(--color-text-main);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--color-text-main);
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--color-text-main);
+        }
+
+        p, span, label, li, button, a {
+            color: var(--color-text-secondary);
+        }
+
+        @layer utilities {
+            .input {
+                @apply w-full px-4 py-3 border rounded-[12px] focus:outline-none focus:ring-2 transition;
+                border-color: var(--color-border);
+                background-color: var(--color-card);
+                color: var(--color-text-main);
+            }
+            .textarea {
+                @apply w-full px-4 py-3 border rounded-[12px] focus:outline-none focus:ring-2 transition;
+                border-color: var(--color-border);
+                background-color: var(--color-card);
+                color: var(--color-text-main);
+            }
+            
+            .btn {
+                @apply px-6 py-3 bg-[#ef6c30] text-white rounded-[12px] hover:bg-[#d35400] transition font-semibold text-center inline-block cursor-pointer;
+                box-shadow: 0 6px 18px rgba(239,108,48,0.14);
+            }
+
+            .btn-secondary {
+                @apply px-4 py-2 bg-[#efe6dd] text-[#6b5a48] font-semibold rounded-[12px] hover:bg-[#efe0d6] focus:outline-none focus:ring-2 transition text-center inline-block cursor-pointer;
+                border-color: var(--color-border);
+            }
+
+            .hero-panel {
+                @apply rounded-[16px] p-12 text-white w-full overflow-hidden;
+                background-color: #1a1612; /* dark hero from reference */
+                box-shadow: 0 24px 64px rgba(10, 8, 7, 0.18);
+            }
+
+            .hero-button {
+                @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium transition;
+                background-color: #ffffff; /* white pill */
+                color: #1a1612; /* dark text on pill */
+                border-radius: 9999px;
+                box-shadow: 0 6px 20px rgba(15,23,42,0.12);
+            }
+            .hero-button.secondary {
+                @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium transition;
+                background-color: transparent;
+                color: rgba(255,255,255,0.92);
+                border: 1px solid rgba(255,255,255,0.12);
+            }
+            .hero-button:hover { transform: translateY(-2px); }
+            
+            /* Navigation link style to mirror reference */
+            .nav-link {
+                @apply text-sm text-[#6b7280] px-3 py-2 hover:text-[#111827] hover:underline transition;
+            }
+            nav .nav-container { gap: 12px; }
+
+            /* Card subtle hover to lift slightly */
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+            }
+
+            /* Primary rounded pill button used in hero */
+            .pill {
+                border-radius: 9999px;
+                padding: 10px 22px;
+            }
+            
+            .card {
+                @apply bg-[#ffffff] rounded-[12px] border p-6 transition duration-200;
+                border-color: var(--color-border);
+                box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+            }
+        }
+        
+        /* Адаптивность для телефонов */
+        @media (max-width: 768px) {
+            .card { @apply p-4; }
+            
+            h1 { font-size: 24px !important; }
+            h2 { font-size: 20px !important; }
+            h3 { font-size: 18px !important; }
+            
+            .btn { @apply w-full py-3; }
+            .btn-secondary { @apply w-full py-3; }
+            
+            .grid-adaptive {
+                @apply grid-cols-1 !important;
+            }
+            
+            nav .nav-container {
+                @apply flex-col gap-3;
+            }
+            
+            nav .nav-flex {
+                @apply flex-col items-center gap-2 w-full;
+            }
+            
+            video, iframe {
+                @apply max-h-[300px];
+            }
+            
+            input, textarea {
+                @apply w-full;
+            }
+        }
+        
+        /* Адаптивность для маленьких телефонов */
+        @media (max-width: 480px) {
+            .card { @apply p-3; }
+            
+            main { @apply px-2 !important; }
+            
+            video, iframe {
+                @apply max-h-[250px];
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#f9fafb] text-[#111827] min-h-screen flex flex-col font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <nav class="sticky top-0 z-50 bg-[#ffffff] border-b border-[#e5e7eb]">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center nav-container">
+            <div class="flex items-center gap-6">
+                <a href="{% url 'lessons:index' %}" class="text-2xl font-extrabold" style="color:var(--color-primary)">Читальня</a>
+                <nav class="hidden md:flex items-center gap-2">
+                    <a href="{% url 'lessons:index' %}#lessons" class="nav-link">Уроки</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4 nav-flex">
+                {% if user.is_authenticated %}
+                    <span class="text-sm text-gray-500">Учитель: <strong class="text-gray-800">{{ user.name }}</strong></span>
+                    <a href="{% url 'lessons:dashboard' %}" class="btn-secondary">Личный кабинет</a>
+                    <a href="{% url 'lessons:teacher_logout' %}" class="px-4 py-2 text-gray-500 hover:text-red-600 font-medium transition text-sm">Выход</a>
+                {% elif request.session.student_name %}
+                    <span class="text-sm text-gray-500">Ученик: <strong class="text-gray-800">{{ request.session.student_name }} ({{ request.session.student_group }})</strong></span>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <a href="{% url 'lessons:teacher_login' %}" class="px-4 py-2 bg-[#ef6c30] text-white rounded-[8px] hover:bg-[#d35400] transition text-sm">Войти как учитель</a>
+                        <a href="{% url 'lessons:student_logout' %}" class="btn-secondary">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'lessons:teacher_login' %}" class="px-4 py-2 text-[#374151]" style="transition:color .15s" onmouseover="this.style.color='var(--color-primary)';" onmouseout="this.style.color='#374151'">Вход</a>
+                    <a href="{% url 'lessons:student_register' %}" class="px-4 py-2 bg-[#e5e7eb] text-[#374151] hover:bg-[#d1d5db] font-semibold rounded-[8px] transition text-sm">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- mobile menu toggle & mobile nav -->
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="md:hidden flex items-center justify-between">
+                <div></div>
+                <button id="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="p-2 rounded-md text-[#6b7280] hover:text-[#111827] focus:outline-none focus:ring-2" style="outline-color:var(--color-primary)">
+                    <span class="sr-only">Открыть меню</span>
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-[#e5e7eb]">
+                <div class="px-4 py-3 flex flex-col gap-2">
+                    <a href="{% url 'lessons:index' %}#lessons" class="nav-link">Уроки</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+            <div>
+                © 2026 Читальня — Учебная платформа.
+            </div>
+            <div class="flex gap-4">
+                <span class="text-xs text-gray-400">Сделано с использованием Django + HTMX</span>
+            </div>
+        </div>
+    </footer>
+    <script>
+        (function(){
+            const btn = document.getElementById('mobile-menu-toggle');
+            const menu = document.getElementById('mobile-menu');
+            if (!btn || !menu) return;
+            btn.addEventListener('click', function(){
+                const open = menu.classList.toggle('hidden');
+                // aria-expanded should be true when menu visible
+                const expanded = !menu.classList.contains('hidden');
+                btn.setAttribute('aria-expanded', String(expanded));
+            });
+        })();
+    </script>
+</body>
+</html>

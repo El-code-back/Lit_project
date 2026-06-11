@@ -1,0 +1,126 @@
+<div class="card bg-white group overflow-hidden" id="lesson-card-{{ lesson.id }}">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Lesson Info -->
+        <div class="flex-1 space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide {% if lesson.is_published %}bg-green-50 text-green-700 border border-green-200/50{% else %}bg-amber-50 text-amber-700 border border-amber-200/50{% endif %}">
+                    {% if lesson.is_published %}Опубликован{% else %}Черновик{% endif %}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200/50">
+                    {% if lesson.video_source_type == 'youtube' %}YouTube{% elif lesson.video_source_type == 'vimeo' %}Vimeo{% else %}Файл{% endif %}
+                </span>
+            </div>
+            
+            <h3 class="text-[22px] font-semibold text-[#111827] tracking-tight leading-snug transition-colors group-hover:text-[#0f172a]">
+                {{ lesson.title }}
+            </h3>
+            
+            {% if lesson.description %}
+                <p class="text-[15px] text-[#5a5248] mb-2 line-clamp-2 max-w-2xl">{{ lesson.description }}</p>
+            {% endif %}
+            
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 font-medium pt-1">
+                <span>{{ lesson.created_at|date:"d M Y" }}</span>
+                <span>•</span>
+                <span>{{ lesson.submissions.count }} ответов</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2 self-start md:self-center">
+            <!-- Open lesson detail page -->
+            <a href="{% url 'lessons:lesson_detail' lesson.id %}" target="_blank" class="btn-secondary pill" title="Открыть страницу урока (ученик)">
+                Открыть
+            </a>
+            
+            <!-- Edit -->
+            <a href="{% url 'lessons:edit_lesson' lesson.id %}" class="btn-secondary pill" title="Редактировать урок">
+                Редактировать
+            </a>
+            
+            <!-- Toggle Publish HTMX -->
+            <button hx-post="{% url 'lessons:toggle_publish' lesson.id %}" 
+                    hx-target="#lesson-card-{{ lesson.id }}" 
+                    hx-swap="outerHTML" 
+                    class="btn-secondary" 
+                    title="Изменить статус публикации">
+                {% if lesson.is_published %}
+                    Скрыть
+                {% else %}
+                    Опубликовать
+                {% endif %}
+            </button>
+            
+            <!-- Delete HTMX -->
+            <button hx-post="{% url 'lessons:delete_lesson' lesson.id %}" 
+                    hx-confirm="Вы уверены, что хотите безвозвратно удалить урок '{{ lesson.title }}'?" 
+                    hx-target="#lesson-card-{{ lesson.id }}" 
+                    hx-swap="delete" 
+                    class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-[8px] focus:outline-none focus:ring-2 focus:ring-red-200 transition text-center inline-block cursor-pointer" 
+                    title="Удалить урок">
+                Удалить
+            </button>
+        </div>
+    </div>
+
+    <!-- Student Answers Section -->
+    {% if lesson.submissions.count > 0 %}
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <h4 class="font-semibold text-[#111827] mb-3">Ответы учеников ({{ lesson.submissions.count }})</h4>
+            
+            <div class="space-y-3">
+                {% for submission in lesson.submissions.all %}
+                    <div class="bg-[#ffffff] p-4 rounded-[8px] border border-gray-200 text-left">
+                        <div class="flex justify-between items-start mb-2">
+                            <strong class="text-[#111827]">{{ submission.student_name }}</strong>
+                            {% if submission.grade %}
+                                <span class="px-3 py-1 bg-[#10b981] text-white rounded-full text-sm font-semibold">
+                                    Оценка {{ submission.grade }}
+                                </span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-[#6b7280] text-white rounded-full text-sm">
+                                    Не оценено
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-[#6b7280] text-sm mb-2">{{ submission.answer_text }}</p>
+                        
+                        {% if submission.answer_file %}
+                            <a href="{{ submission.answer_file.url }}" class="hover:underline text-sm block my-1" style="color:var(--color-primary)" download>
+                                Скачать файл
+                            </a>
+                        {% endif %}
+                        
+                        <div class="text-xs text-[#6b7280] mt-2">
+                            {{ submission.submitted_at|date:"d M Y, H:i" }}
+                        </div>
+                        
+                        <!-- Блок оценки (только для учителя) -->
+                        {% if not submission.grade %}
+                            <form method="POST" action="{% url 'lessons:grade_submission' submission.id %}" class="mt-3 flex gap-2 flex-wrap items-center">
+                                {% csrf_token %}
+                                <input type="number" name="grade" min="1" max="100" 
+                                       placeholder="Оценка (1-100)" 
+                                       class="px-3 py-2 border border-gray-300 rounded-lg w-32"
+                                       required>
+                                <input type="text" name="comment" 
+                                       placeholder="Комментарий" 
+                                       class="px-3 py-2 border border-gray-300 rounded-lg w-48">
+                                <button type="submit" class="px-4 py-2 text-white rounded-[8px]" style="background-color:var(--color-primary);"> 
+                                    Оценить
+                                </button>
+                            </form>
+                        {% else %}
+                            {% if submission.grade_comment %}
+                                <p class="text-sm text-[#6b7280] mt-2">
+                                    Комментарий: {{ submission.grade_comment }}
+                                </p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>

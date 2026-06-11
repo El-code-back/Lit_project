@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация ученика{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card">
+        <h1 class="text-2xl font-bold text-[#111827] text-center mb-6">
+            Регистрация ученика
+        </h1>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-[#6b7280] mb-2 font-semibold">ФИО *</label>
+                {{ form.student_name }}
+            </div>
+            <div>
+                <label class="block text-[#6b7280] mb-2 font-semibold">Группа *</label>
+                {{ form.group }}
+            </div>
+            <div>
+                <label class="block text-[#6b7280] mb-2 font-semibold">Email *</label>
+                {{ form.email }}
+            </div>
+            <button type="submit" class="btn w-full mt-4">
+                Войти как ученик
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

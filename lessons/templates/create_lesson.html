@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if lesson %}Редактировать{% else %}Создать{% endif %} урок — Читальня{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-[28px] font-bold text-[#111827]">
+            {% if lesson %}Редактировать{% else %}Создать{% endif %} урок
+        </h1>
+        <a href="{% url 'lessons:dashboard' %}" class="text-sm font-semibold hover:underline" style="color:var(--color-primary)">
+            Назад к панели
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <strong>Пожалуйста, исправьте ошибки в форме:</strong>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <h2 class="text-[20px] font-bold text-[#111827] mb-4">Шаг 1: Название</h2>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Название *</label>
+                    {{ form.title }}
+                </div>
+                <div>
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Описание</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="text-[20px] font-bold text-[#111827] mb-4">Шаг 2: Видео</h2>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Источник *</label>
+                    {{ form.video_source_type }}
+                </div>
+                <div id="video-url-field">
+                    <label class="block text-[#6b7280] mb-1 font-semibold">URL видео</label>
+                    {{ form.video_url }}
+                </div>
+                <div id="video-file-field" class="hidden">
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Видео файл</label>
+                    <div class="p-2 border border-gray-300 rounded-lg bg-white">
+                        {{ form.video_file }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="text-[20px] font-bold text-[#111827] mb-4">Шаг 3: Задание</h2>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Текст задания *</label>
+                    {{ form.task_text }}
+                </div>
+                <div>
+                    <label class="block text-[#6b7280] mb-1 font-semibold">Файл задания</label>
+                    <div class="p-2 border border-gray-300 rounded-lg bg-white">
+                        {{ form.task_file }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+            <button type="submit" class="btn w-full sm:w-auto">Опубликовать</button>
+            <a href="{% url 'lessons:dashboard' %}" class="btn-secondary w-full sm:w-auto text-center">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectEl = document.getElementById('id_video_source_type');
+        if (selectEl) {
+            function toggleFields() {
+                const urlField = document.getElementById('video-url-field');
+                const fileField = document.getElementById('video-file-field');
+                if (selectEl.value === 'upload') {
+                    urlField.classList.add('hidden');
+                    fileField.classList.remove('hidden');
+                } else {
+                    urlField.classList.remove('hidden');
+                    fileField.classList.add('hidden');
+                }
+            }
+            selectEl.addEventListener('change', toggleFields);
+            toggleFields();
+        }
+    });
+</script>
+{% endblock %}
