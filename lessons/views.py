@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import HttpResponse
 from .models import Teacher, Lesson, Submission
 from django.conf import settings
 from .forms import RegistrationForm, LoginForm, CreateLessonForm, SubmissionForm
@@ -12,6 +13,11 @@ def index(request):
     """Главная: список опубликованных уроков"""
     lessons = Lesson.objects.filter(is_published=True)
     return render(request, 'index.html', {'lessons': lessons})
+
+def healthz(request):
+    """Проверка состояния приложения для внешнего мониторинга"""
+    return HttpResponse('OK', content_type='text/plain')
+
 
 def lesson_detail(request, lesson_id):
     """Страница урока для ученика"""
