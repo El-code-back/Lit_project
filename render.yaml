@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: lit-project
+    runtime: python
+    repo: https://github.com/El-code-back/Lit_project
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn mvp_school.wsgi --bind 0.0.0.0:$PORT --workers 4 --timeout 120
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: PYTHON_VERSION
+        value: "3.13.7"
+    disk:
+      name: media
+      mountPath: /opt/render/project/src/media
+      sizeGB: 1

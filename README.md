@@ -68,6 +68,77 @@ python manage.py runserver
 
 Откройте http://127.0.0.1:8000 в браузере.
 
+## Деплой на Render (бесплатно)
+
+Самый простой и быстрый способ запустить проект в продакшене.
+
+### Способ 1: Через render.yaml (автоматически)
+
+1. Зайдите на [dashboard.render.com](https://dashboard.render.com) и нажмите **"New +" → "Blueprint"**
+2. Выберите ваш репозиторий `El-code-back/Lit_project`
+3. Render сам прочитает `render.yaml` и создаст Web Service
+4. В появившемся окне **заполните переменную `SECRET_KEY`**:
+   - Нажмите `Generate` рядом с SECRET_KEY (или вставьте свой)
+   - Render автоматически запишет её в secrets
+5. Нажмите **"Apply"**
+
+Render сам:
+- Установит зависимости
+- Соберёт статику через `collectstatic`
+- Применит миграции
+- Запустит сервер через gunicorn
+- Создаст постоянный диск 1 ГБ для `media/` (загруженные файлы)
+
+Через 2–3 минуты сайт будет доступен по адресу `https://lit-project.onrender.com`
+
+### Способ 2: Вручную через Web Service
+
+1. На [dashboard.render.com](https://dashboard.render.com) нажмите **"New +" → "Web Service"**
+2. Подключите GitHub и выберите `El-code-back/Lit_project`
+3. Заполните поля:
+   - **Name:** `lit-project`
+   - **Region:** `Frankfurt (EU)` — ближайший к Средней Азии
+   - **Branch:** `main`
+   - **Runtime:** `Python 3`
+   - **Build Command:**
+     ```
+     pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+     ```
+   - **Start Command:**
+     ```
+     gunicorn mvp_school.wsgi --bind 0.0.0.0:$PORT --workers 4 --timeout 120
+     ```
+   - **Plan:** `Free`
+4. Добавьте переменные окружения (см. ниже)
+5. Добавьте **Persistent Disk** (постоянный диск для файлов):
+   - Нажмите **"Add Disk"**
+   - **Name:** `media`
+   - **Mount Path:** `/opt/render/project/src/media`
+   - **Size:** `1 GB`
+6. Нажмите **"Create Web Service"**
+
+### Переменные окружения на Render
+
+| Переменная | Значение | Где взять |
+|---|---|---|
+| `SECRET_KEY` | (секретный ключ) | Нажмите **Generate** на Render |
+| `DEBUG` | `False` | — |
+| `ALLOWED_HOSTS` | `.onrender.com` | — |
+| `CSRF_TRUSTED_ORIGINS` | `https://lit-project.onrender.com` | — |
+| `PYTHON_VERSION` | `3.13.7` | — |
+
+### После деплоя
+
+1. Откройте `https://lit-project.onrender.com/admin/` и создайте суперпользователя через **Django Admin**
+2. Или зарегистрируйтесь через `/register/` на самом сайте
+3. Загрузите видео и создайте уроки через `/dashboard/`
+
+### Важно
+
+- Бесплатный тариф Render "засыпает" сервер после 15 минут бездействия. Первый запрос после просыпания может длиться до 30 секунд.
+- SQLite работает на бесплатном диске, но для продакшена с нагрузкой лучше перейти на PostgreSQL (Render предоставляет его бесплатно).
+- Загруженные файлы (`media/`) хранятся на постоянном диске и **не пропадают** после перезапуска.
+
 ## Структура проекта
 
 ```
