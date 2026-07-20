@@ -63,10 +63,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mvp_school.wsgi.application'
 
+IS_VERCEL = os.environ.get('VERCEL') == '1' or bool(os.environ.get('VERCEL_ENV'))
+SQLITE_DATABASE_PATH = os.environ.get('SQLITE_DATABASE_PATH')
+if not SQLITE_DATABASE_PATH:
+    SQLITE_DATABASE_PATH = '/tmp/db.sqlite3' if IS_VERCEL else BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': SQLITE_DATABASE_PATH,
     }
 }
 
