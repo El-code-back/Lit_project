@@ -6,7 +6,6 @@ app_name = 'lessons'
 urlpatterns = [
     # Public
     path('', views.index, name='index'),
-    path('', views.index, name='index'),
     path('healthz/', views.healthz, name='healthz'),
     path('lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
     

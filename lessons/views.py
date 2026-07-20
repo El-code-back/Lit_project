@@ -7,6 +7,8 @@ from .models import Teacher, Lesson, Submission
 from django.conf import settings
 from .forms import RegistrationForm, LoginForm, CreateLessonForm, SubmissionForm
 
+EMAIL_AUTH_BACKEND = 'lessons.backends.EmailBackend'
+
 # === PUBLIC PAGES ===
 
 def index(request):
@@ -146,7 +148,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             teacher = form.save()
-            login(request, teacher)
+            login(request, teacher, backend=EMAIL_AUTH_BACKEND)
             return redirect('lessons:dashboard')
     else:
         form = RegistrationForm()
