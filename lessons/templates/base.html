@@ -172,6 +172,32 @@
                 border-color: var(--color-border);
                 box-shadow: inset 4px 0 0 var(--color-primary);
             }
+
+            .choice-option {
+                @apply flex items-start gap-3 rounded-[10px] border px-3 py-3 text-sm transition cursor-pointer;
+                border-color: var(--color-border);
+                background-color: #fffdf8;
+            }
+
+            .choice-option:hover {
+                background-color: #fbf7f2;
+                border-color: rgba(155,47,32,0.35);
+            }
+
+            .choice-option input[type="radio"],
+            .choice-option input[type="checkbox"] {
+                width: 1.15rem;
+                height: 1.15rem;
+                min-width: 1.15rem;
+                margin-top: 0.1rem;
+                flex-shrink: 0;
+            }
+
+            .choice-option span {
+                @apply min-w-0 leading-6;
+                color: var(--color-text-main);
+                overflow-wrap: anywhere;
+            }
         }
         
         /* Адаптивность для телефонов */
@@ -201,8 +227,15 @@
                 @apply max-h-[300px];
             }
             
-            input, textarea {
+            input:not([type="radio"]):not([type="checkbox"]), textarea, select {
                 @apply w-full;
+            }
+
+            input[type="radio"], input[type="checkbox"] {
+                width: 1.15rem;
+                height: 1.15rem;
+                min-width: 1.15rem;
+                flex-shrink: 0;
             }
         }
         

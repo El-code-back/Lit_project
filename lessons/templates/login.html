@@ -21,10 +21,10 @@
             {% endif %}
             
             <div>
-                <label class="block text-slate-700 text-sm font-semibold mb-2">Электронная почта (Email)</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <p class="text-red-500 text-xs mt-1">{{ form.email.errors.as_text }}</p>
+                <label class="block text-slate-700 text-sm font-semibold mb-2">Логин</label>
+                {{ form.login }}
+                {% if form.login.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ form.login.errors.as_text }}</p>
                 {% endif %}
             </div>
             

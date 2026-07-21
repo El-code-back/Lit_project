@@ -247,16 +247,18 @@ def teacher_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            login_value = form.cleaned_data['login'].strip()
             password = form.cleaned_data['password']
-            user = authenticate(request, email=email, password=password)
+            user = authenticate(request, username=login_value, password=password)
+            if user is None and '@' in login_value:
+                user = authenticate(request, email=login_value, password=password)
             if user:
                 login(request, user)
                 for key in ('student_name', 'student_group', 'student_email'):
                     request.session.pop(key, None)
                 return redirect('lessons:dashboard')
             else:
-                form.add_error(None, 'Неверный email или пароль')
+                form.add_error(None, 'Неверный логин или пароль')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})

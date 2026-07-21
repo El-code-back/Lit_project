@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import get_user_model
 
 from .assignment_builder import build_assignment_payload
@@ -44,15 +46,35 @@ SAMPLE_LESSONS = [
 
 def get_sample_teacher():
     Teacher = get_user_model()
-    teacher = Teacher.objects.filter(email="teacher@example.com").first()
+    username = os.environ.get("DEFAULT_TEACHER_USERNAME", "teacher").strip() or "teacher"
+    email = os.environ.get("DEFAULT_TEACHER_EMAIL", "teacher@example.com").strip() or "teacher@example.com"
+    password_from_env = os.environ.get("DEFAULT_TEACHER_PASSWORD")
+    password = (password_from_env or "LitTeacher2026!").strip() or "LitTeacher2026!"
+
+    teacher = Teacher.objects.filter(username=username).first()
+    if teacher is None:
+        teacher = Teacher.objects.filter(email=email).first()
     if teacher:
+        changed = False
+        should_refresh_password = password_from_env is not None or teacher.username != username
+        if teacher.username != username and not Teacher.objects.filter(username=username).exclude(pk=teacher.pk).exists():
+            teacher.username = username
+            changed = True
+        if teacher.email != email and not Teacher.objects.filter(email=email).exclude(pk=teacher.pk).exists():
+            teacher.email = email
+            changed = True
+        if (should_refresh_password or not teacher.has_usable_password()) and not teacher.check_password(password):
+            teacher.set_password(password)
+            changed = True
+        if changed:
+            teacher.save()
         return teacher
 
     return Teacher.objects.create_user(
-        username="teacher@example.com",
-        email="teacher@example.com",
-        password="TeacherPass123!",
-        name="Преподаватель литературы",
+        username=username,
+        email=email,
+        password=password,
+        name=os.environ.get("DEFAULT_TEACHER_NAME", "Преподаватель литературы"),
     )
 
 

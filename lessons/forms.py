@@ -55,9 +55,10 @@ class RegistrationForm(forms.ModelForm):
 
 class LoginForm(forms.Form):
     """Вход учителя"""
-    email = forms.EmailField(
-        label="Email",
-        widget=forms.EmailInput(attrs={'class': 'input', 'placeholder': 'email@example.com'})
+    login = forms.CharField(
+        label="Логин",
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'input', 'placeholder': 'teacher'})
     )
     password = forms.CharField(
         label="Пароль",

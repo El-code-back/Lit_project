@@ -202,8 +202,8 @@
                                 {% if item.type == 'test' %}
                                     <div class="space-y-2">
                                         {% for option in item.options %}
-                                            <label class="flex items-center gap-2 text-sm text-[#111827]">
-                                                <input type="radio" name="assignment_{{ item.id }}" value="{{ option }}" class="accent-[#ef6c30]">
+                                            <label class="choice-option">
+                                                <input type="radio" name="assignment_{{ item.id }}" value="{{ option }}" class="accent-[#9b2f20]">
                                                 <span>{{ option }}</span>
                                             </label>
                                         {% endfor %}
