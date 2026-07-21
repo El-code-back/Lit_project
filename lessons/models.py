@@ -21,12 +21,14 @@ class Lesson(models.Model):
     VIDEO_SOURCE_CHOICES = [
         ('youtube', 'YouTube'),
         ('vimeo', 'Vimeo'),
+        ('rutube', 'Rutube'),
         ('upload', 'Файл'),
     ]
     
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField("Название урока", max_length=300)
     description = models.TextField("Описание", blank=True)
+    theory_text = models.TextField("Теория урока", blank=True)
     
     # Видео
     video_source_type = models.CharField("Источник видео", max_length=10, choices=VIDEO_SOURCE_CHOICES)
@@ -75,6 +77,11 @@ class Lesson(models.Model):
             if video_id:
                 return f"https://player.vimeo.com/video/{video_id}"
             return self.video_url
+        elif self.video_source_type == 'rutube' and self.video_url:
+            video_id = self.video_url.rstrip('/').split('/')[-1].split('?')[0]
+            if video_id:
+                return f"https://rutube.ru/play/embed/{video_id}/"
+            return self.video_url
         elif self.video_source_type == 'upload' and self.video_file:
             return self.video_file.url  # Локальный файл
         return None
@@ -105,8 +112,11 @@ class Submission(models.Model):
     """Ответ ученика"""
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='submissions')
     student_name = models.CharField("Имя ученика", max_length=200)
+    student_group = models.CharField("Группа", max_length=100, blank=True)
+    student_email = models.EmailField("Email", blank=True)
     answer_text = models.TextField("Текст ответа", blank=True)
     answer_file = models.FileField("Файл ответа", upload_to='submissions/', blank=True, null=True)
+    answer_data = models.JSONField("Ответы на задание", default=dict, blank=True)
     
     # Новая: Оценка от учителя
     grade = models.IntegerField("Оценка", blank=True, null=True, 
@@ -130,6 +140,7 @@ class Assignment(models.Model):
     TYPE_CHOICES = [
         ('test', 'Тест (множественный выбор)'),
         ('fill', 'Заполнить пропуски'),
+        ('short', 'Краткий ответ'),
         ('theory', 'Теория / чтение'),
     ]
 
@@ -138,11 +149,17 @@ class Assignment(models.Model):
     source_text = models.TextField('Источник (вставьте текст)', blank=True)
     assignment_type = models.CharField('Тип задания', max_length=20, choices=TYPE_CHOICES)
     generated = models.JSONField('Сгенерированные вопросы/данные', default=dict, blank=True)
+    order = models.PositiveIntegerField('Порядок', default=1)
+    is_active = models.BooleanField('Активно', default=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
 
     class Meta:
         verbose_name = 'Задание'
         verbose_name_plural = 'Задания'
+        ordering = ['order', 'created_at']
 
     def __str__(self):
         return self.title or f"Задание {self.id} ({self.get_assignment_type_display()})"
+
+    def items(self):
+        return self.generated.get('items', []) if isinstance(self.generated, dict) else []

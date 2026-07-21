@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlparse
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -68,12 +69,33 @@ SQLITE_DATABASE_PATH = os.environ.get('SQLITE_DATABASE_PATH')
 if not SQLITE_DATABASE_PATH:
     SQLITE_DATABASE_PATH = '/tmp/db.sqlite3' if IS_VERCEL else BASE_DIR / 'db.sqlite3'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SQLITE_DATABASE_PATH,
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    database_url = urlparse(DATABASE_URL)
+    database_options = {
+        key: values[-1]
+        for key, values in parse_qs(database_url.query).items()
+        if values
     }
-}
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': database_url.path.lstrip('/'),
+            'USER': unquote(database_url.username or ''),
+            'PASSWORD': unquote(database_url.password or ''),
+            'HOST': database_url.hostname or '',
+            'PORT': database_url.port or '',
+            'OPTIONS': database_options,
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': SQLITE_DATABASE_PATH,
+        }
+    }
 
 AUTH_USER_MODEL = 'lessons.Teacher'
 
@@ -86,7 +108,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Whitenoise static file compression & caching
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -94,16 +123,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Optional S3 media storage (enable by setting USE_S3=True in env)
 if os.environ.get('USE_S3', 'False') == 'True':
     # django-storages S3 configuration
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STORAGES['default'] = {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+    }
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', None)
     AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', None)
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL', None)
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = os.environ.get('AWS_QUERYSTRING_AUTH', 'False') == 'True'
+    AWS_S3_FILE_OVERWRITE = False
     if AWS_S3_CUSTOM_DOMAIN:
         MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
     else:
-        if AWS_S3_REGION_NAME:
+        if AWS_S3_ENDPOINT_URL:
+            MEDIA_URL = f'{AWS_S3_ENDPOINT_URL.rstrip("/")}/{AWS_STORAGE_BUCKET_NAME}/'
+        elif AWS_S3_REGION_NAME:
             MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
         else:
             MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'

@@ -14,6 +14,9 @@ def prepare_vercel_sqlite_database():
     if not getattr(settings, 'IS_VERCEL', False):
         return
 
+    if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.sqlite3':
+        return
+
     database_path = Path(settings.DATABASES['default']['NAME'])
     bundled_database_path = settings.BASE_DIR / 'db.sqlite3'
     database_path.parent.mkdir(parents=True, exist_ok=True)

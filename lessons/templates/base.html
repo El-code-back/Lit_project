@@ -107,7 +107,7 @@
             }
 
             .hero-panel {
-                @apply rounded-[16px] p-12 text-white w-full overflow-hidden;
+                @apply rounded-[16px] p-8 md:p-12 text-white w-full overflow-hidden;
                 background-color: #1a1612; /* dark hero from reference */
                 box-shadow: 0 24px 64px rgba(10, 8, 7, 0.18);
             }
@@ -135,7 +135,6 @@
 
             /* Card subtle hover to lift slightly */
             .card:hover {
-                transform: translateY(-4px);
                 box-shadow: 0 6px 18px rgba(15,23,42,0.08);
             }
 
@@ -168,11 +167,11 @@
             }
             
             nav .nav-container {
-                @apply flex-col gap-3;
+                @apply flex-row flex-wrap justify-center gap-3;
             }
             
             nav .nav-flex {
-                @apply flex-col items-center gap-2 w-full;
+                @apply flex-row flex-wrap justify-center gap-2 w-full;
             }
             
             video, iframe {

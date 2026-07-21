@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import password_validation
-from .models import Teacher, Lesson, Submission
+from .models import Teacher, Lesson, Submission, Assignment
 
 class RegistrationForm(forms.ModelForm):
     """Регистрация учителя"""
@@ -66,18 +66,67 @@ class LoginForm(forms.Form):
 
 class CreateLessonForm(forms.ModelForm):
     """Создание/редактирование урока"""
+    assignment_title = forms.CharField(
+        label="Название задания",
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'input',
+            'placeholder': 'Например: Проверка понимания текста'
+        })
+    )
+    assignment_type = forms.ChoiceField(
+        label="Тип задания",
+        required=False,
+        choices=[('', 'Без интерактивного задания')] + list(Assignment.TYPE_CHOICES),
+        widget=forms.Select(attrs={'class': 'input', 'id': 'assignment-type'})
+    )
+    assignment_source_text = forms.CharField(
+        label="Источник для конструктора",
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'textarea',
+            'rows': 6,
+            'id': 'assignment-source',
+            'placeholder': 'Вставьте текст урока, фрагмент из учебника или объяснение от ИИ'
+        })
+    )
+    assignment_manual_questions = forms.CharField(
+        label="Свои вопросы",
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'textarea',
+            'rows': 4,
+            'id': 'assignment-manual',
+            'placeholder': 'По одному вопросу на строку. Если заполнено, конструктор возьмёт эти вопросы.'
+        })
+    )
+
     class Meta:
         model = Lesson
-        fields = ['title', 'description', 'video_source_type', 'video_url', 'video_file', 'task_text', 'task_file']
+        fields = ['title', 'description', 'theory_text', 'video_source_type', 'video_url', 'video_file', 'task_text', 'task_file']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Название урока'}),
             'description': forms.Textarea(attrs={'class': 'textarea', 'rows': 3, 'placeholder': 'Краткое описание (опционально)'}),
+            'theory_text': forms.Textarea(attrs={'class': 'textarea', 'rows': 7, 'placeholder': 'Краткая теория, конспект или план урока'}),
             'video_source_type': forms.Select(attrs={'class': 'input', 'id': 'id_video_source_type'}),
             'video_url': forms.URLInput(attrs={'class': 'input', 'placeholder': 'https://youtube.com/watch?v=...', 'id': 'video-url'}),
             'video_file': forms.FileInput(attrs={'class': 'input', 'accept': 'video/*', 'id': 'video-file'}),
             'task_text': forms.Textarea(attrs={'class': 'textarea', 'rows': 5, 'placeholder': 'Текст задания (обязательно)'}),
             'task_file': forms.FileInput(attrs={'class': 'input', 'accept': '*/*'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        video_source_type = cleaned_data.get('video_source_type')
+        video_url = cleaned_data.get('video_url')
+        video_file = cleaned_data.get('video_file')
+
+        if video_source_type in {'youtube', 'vimeo', 'rutube'} and not video_url:
+            self.add_error('video_url', 'Добавьте ссылку на видео.')
+        if video_source_type == 'upload' and not video_file and not self.instance.video_file:
+            self.add_error('video_file', 'Загрузите видеофайл или выберите YouTube/Vimeo.')
+        return cleaned_data
 
 class SubmissionForm(forms.Form):
     """Ответ ученика"""
