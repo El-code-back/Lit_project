@@ -6,25 +6,25 @@
     <title>{% block title %}Читальня{% endblock %}</title>
     <!-- Tailwind CSS 3.4 Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google font from reference -->
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        bg: '#fbf7f2',
-                        card: '#fffaf6',
-                        primary: '#ef6c30',
-                        'primary-hover': '#d35400',
-                        textMain: '#1a1612',
-                        textSecondary: '#6b5a48',
-                        border: '#efe6dd',
+                        bg: '#f6f1e8',
+                        card: '#fffdf8',
+                        primary: '#9b2f20',
+                        'primary-hover': '#7f2419',
+                        textMain: '#1c1a17',
+                        textSecondary: '#6b6258',
+                        border: '#ded2c0',
                         success: '#10b981',
                         error: '#ef4444',
                     },
                     fontFamily: {
-                        sans: ['DM Sans', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial'],
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui'],
+                        serif: ['Noto Serif', 'Georgia', 'serif'],
                     }
                 }
             }
@@ -37,21 +37,25 @@
     <!-- Custom styling compiled by Tailwind -->
     <style type="text/tailwindcss">
         :root {
-            --color-page-bg: #fbf7f2;
-            --color-card: #fffaf6;
-            --color-primary: #ef6c30;
-            --color-primary-hover: #d35400;
-            --color-text-main: #1a1612;
-            --color-text-secondary: #6b5a48;
-            --color-border: #efe6dd;
-            --color-secondary-bg: #efe6dd;
+            --color-page-bg: #f6f1e8;
+            --color-card: #fffdf8;
+            --color-primary: #9b2f20;
+            --color-primary-hover: #7f2419;
+            --color-text-main: #1c1a17;
+            --color-text-secondary: #6b6258;
+            --color-border: #ded2c0;
+            --color-secondary-bg: #eadfce;
             --color-success: #10b981;
             --color-error: #ef4444;
         }
         
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--color-page-bg);
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                linear-gradient(rgba(155,47,32,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(155,47,32,0.028) 1px, transparent 1px),
+                var(--color-page-bg);
+            background-size: 28px 28px;
             color: var(--color-text-main);
             font-size: 16px;
             line-height: 1.5;
@@ -62,6 +66,7 @@
             font-weight: 700;
             line-height: 1.25;
             color: var(--color-text-main);
+            font-family: 'Noto Serif', Georgia, serif;
         }
 
         h2 {
@@ -97,26 +102,31 @@
             }
             
             .btn {
-                @apply px-6 py-3 bg-[#ef6c30] text-white rounded-[12px] hover:bg-[#d35400] transition font-semibold text-center inline-block cursor-pointer;
-                box-shadow: 0 6px 18px rgba(239,108,48,0.14);
+                @apply px-6 py-3 text-white rounded-[8px] transition font-bold text-center inline-block cursor-pointer;
+                background-color: var(--color-primary);
+                box-shadow: 0 10px 22px rgba(155,47,32,0.18);
             }
 
             .btn-secondary {
-                @apply px-4 py-2 bg-[#efe6dd] text-[#6b5a48] font-semibold rounded-[12px] hover:bg-[#efe0d6] focus:outline-none focus:ring-2 transition text-center inline-block cursor-pointer;
+                @apply px-4 py-2 font-bold rounded-[8px] focus:outline-none focus:ring-2 transition text-center inline-block cursor-pointer;
+                background-color: var(--color-secondary-bg);
+                color: var(--color-text-main);
                 border-color: var(--color-border);
             }
 
             .hero-panel {
-                @apply rounded-[16px] p-8 md:p-12 text-white w-full overflow-hidden;
-                background-color: #1a1612; /* dark hero from reference */
-                box-shadow: 0 24px 64px rgba(10, 8, 7, 0.18);
+                @apply rounded-[8px] p-8 md:p-12 text-white w-full overflow-hidden relative;
+                background:
+                    linear-gradient(135deg, rgba(28,26,23,0.96), rgba(83,38,26,0.96)),
+                    repeating-linear-gradient(0deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 1px, transparent 1px, transparent 12px);
+                box-shadow: 0 24px 64px rgba(10, 8, 7, 0.22);
             }
 
             .hero-button {
                 @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium transition;
-                background-color: #ffffff; /* white pill */
-                color: #1a1612; /* dark text on pill */
-                border-radius: 9999px;
+                background-color: #fff7e8;
+                color: #1c1a17;
+                border-radius: 8px;
                 box-shadow: 0 6px 20px rgba(15,23,42,0.12);
             }
             .hero-button.secondary {
@@ -125,7 +135,7 @@
                 color: rgba(255,255,255,0.92);
                 border: 1px solid rgba(255,255,255,0.12);
             }
-            .hero-button:hover { transform: translateY(-2px); }
+            .hero-button:hover { transform: translateY(-1px); }
             
             /* Navigation link style to mirror reference */
             .nav-link {
@@ -140,14 +150,27 @@
 
             /* Primary rounded pill button used in hero */
             .pill {
-                border-radius: 9999px;
+                border-radius: 8px;
                 padding: 10px 22px;
             }
             
             .card {
-                @apply bg-[#ffffff] rounded-[12px] border p-6 transition duration-200;
+                @apply rounded-[8px] border p-6 transition duration-200;
+                background-color: var(--color-card);
                 border-color: var(--color-border);
-                box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+                box-shadow: 0 2px 0 rgba(28, 26, 23, 0.04);
+            }
+
+            .course-chip {
+                @apply inline-flex items-center px-3 py-1 rounded-[6px] text-xs font-extrabold uppercase;
+                background-color: rgba(155,47,32,0.10);
+                color: var(--color-primary);
+            }
+
+            .lesson-frame {
+                @apply rounded-[8px] border bg-white p-5;
+                border-color: var(--color-border);
+                box-shadow: inset 4px 0 0 var(--color-primary);
             }
         }
         
@@ -195,7 +218,7 @@
         }
     </style>
 </head>
-<body class="bg-[#f9fafb] text-[#111827] min-h-screen flex flex-col font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body class="text-[#111827] min-h-screen flex flex-col font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <nav class="sticky top-0 z-50 bg-[#ffffff] border-b border-[#e5e7eb]">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center nav-container">
             <div class="flex items-center gap-6">

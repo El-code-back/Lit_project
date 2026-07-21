@@ -4,32 +4,45 @@
 
 {% block content %}
 <div class="hero-panel mx-auto mb-10 max-w-7xl">
-    <p class="text-sm uppercase tracking-[0.32em] text-white/60 mb-4">Читальня</p>
-    <h1 class="text-[36px] md:text-[56px] font-extrabold leading-tight max-w-4xl text-white">Видео, задания и проверка работ в одном быстром уроке</h1>
-    <p class="mt-5 max-w-2xl text-white/80 text-base leading-7">Преподаватель добавляет видео, вставляет текст для конструктора заданий, а ученик проходит материал и отправляет работу прямо на странице.</p>
-    <div class="mt-8 flex flex-col sm:flex-row gap-3">
-        {% if user.is_authenticated %}
-            <a href="{% url 'lessons:create_lesson' %}" class="hero-button pill">Создать урок</a>
-        {% else %}
-            <a href="{% url 'lessons:index' %}#lessons" class="hero-button pill">Просмотреть уроки</a>
-        {% endif %}
-        <a href="{% url 'lessons:teacher_login' %}" class="hero-button secondary pill">Кабинет учителя</a>
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-end">
+        <div>
+            <p class="text-sm uppercase tracking-[0.32em] text-white/60 mb-4">Читальня · быстрый урок</p>
+            <h1 class="text-[36px] md:text-[58px] font-extrabold leading-tight max-w-4xl text-white">Соберите урок за минуты, проверьте ответы без хаоса</h1>
+            <p class="mt-5 max-w-2xl text-white/80 text-base leading-7">Видео, теория, конструктор заданий и очередь проверки в одном спокойном интерфейсе для преподавателя литературы.</p>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'lessons:create_lesson' %}" class="hero-button pill">Создать урок</a>
+                {% else %}
+                    <a href="{% url 'lessons:index' %}#lessons" class="hero-button pill">Смотреть уроки</a>
+                {% endif %}
+                <a href="{% url 'lessons:teacher_login' %}" class="hero-button secondary pill">Кабинет учителя</a>
+            </div>
+        </div>
+        <div class="bg-white/10 border border-white/15 rounded-[8px] p-5">
+            <p class="text-white/60 text-sm mb-4">Маршрут урока</p>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3 text-white"><span class="w-8 h-8 rounded-[6px] bg-white text-[#1c1a17] flex items-center justify-center font-black">1</span>Видео</div>
+                <div class="flex items-center gap-3 text-white"><span class="w-8 h-8 rounded-[6px] bg-white text-[#1c1a17] flex items-center justify-center font-black">2</span>Теория</div>
+                <div class="flex items-center gap-3 text-white"><span class="w-8 h-8 rounded-[6px] bg-white text-[#1c1a17] flex items-center justify-center font-black">3</span>Задание</div>
+                <div class="flex items-center gap-3 text-white"><span class="w-8 h-8 rounded-[6px] bg-white text-[#1c1a17] flex items-center justify-center font-black">4</span>Проверка</div>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-    <div class="card">
-        <span class="text-sm font-bold text-[#ef6c30]">01</span>
+    <div class="lesson-frame">
+        <span class="course-chip">01</span>
         <h3 class="mt-2 text-lg font-bold text-[#111827]">Загрузите материал</h3>
         <p class="text-sm text-[#6b7280] mt-2">YouTube, Vimeo или видеофайл через внешнее хранилище, плюс теория и файлы задания.</p>
     </div>
-    <div class="card">
-        <span class="text-sm font-bold text-[#ef6c30]">02</span>
+    <div class="lesson-frame">
+        <span class="course-chip">02</span>
         <h3 class="mt-2 text-lg font-bold text-[#111827]">Соберите задание</h3>
         <p class="text-sm text-[#6b7280] mt-2">Вставьте текст, выберите тест, пропуски или краткий ответ, затем быстро поправьте вопросы.</p>
     </div>
-    <div class="card">
-        <span class="text-sm font-bold text-[#ef6c30]">03</span>
+    <div class="lesson-frame">
+        <span class="course-chip">03</span>
         <h3 class="mt-2 text-lg font-bold text-[#111827]">Проверьте ответы</h3>
         <p class="text-sm text-[#6b7280] mt-2">Новые работы попадают в кабинет учителя, где можно выставить балл и комментарий.</p>
     </div>
@@ -38,8 +51,9 @@
 {% if lessons %}
     <div id="lessons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-adaptive">
         {% for lesson in lessons %}
-            <div class="card hover:shadow-lg transition flex flex-col justify-between">
+            <div class="lesson-frame hover:shadow-lg transition flex flex-col justify-between">
                 <div>
+                    <span class="course-chip mb-3">Урок</span>
                     <h3 class="text-[20px] font-semibold text-[#111827] mb-2">{{ lesson.title }}</h3>
                     {% if lesson.description %}
                         <p class="text-[15px] text-[#6b7280] mb-4">{{ lesson.description|truncatewords:18 }}</p>

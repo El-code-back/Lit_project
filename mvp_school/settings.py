@@ -150,3 +150,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'lessons:teacher_login'
 LOGIN_REDIRECT_URL = 'lessons:dashboard'
 LOGOUT_REDIRECT_URL = 'lessons:index'
+
+SEED_SAMPLE_LESSONS = os.environ.get('SEED_SAMPLE_LESSONS', 'True') == 'True'
